@@ -1,0 +1,78 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Release 作成に必要
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build extension
+        run: pnpm build
+
+      - name: Package as zip
+        run: |
+          cd build/chrome-mv3-prod
+          zip -r ../../with-ai-${{ github.ref_name }}.zip .
+          cd ../..
+          ls -la with-ai-*.zip
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: with-ai-*.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## インストール手順
+
+            1. 下の **Assets** から `with-ai-${{ github.ref_name }}.zip` をダウンロード
+            2. zip を解凍
+            3. Chrome で `chrome://extensions/` を開く
+            4. 右上の **「デベロッパーモード」** を ON
+            5. **「パッケージ化されていない拡張機能を読み込む」** をクリック
+            6. 解凍したフォルダを選択
+
+            ## 使い方
+
+            詳しくは [README](https://github.com/sugopin1192/with-ai#使い方) を参照。
+
+            ## 必要なもの
+
+            - Google Chrome
+            - 以下いずれかのAPIキー（お好みで選択）:
+              - [Google Gemini](https://aistudio.google.com/apikey)
+              - [OpenAI](https://platform.openai.com/api-keys)
+              - [Anthropic Claude](https://console.anthropic.com/settings/keys)
+
+      - name: Upload artifact (for manual runs)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: with-ai-extension
+          path: with-ai-*.zip
