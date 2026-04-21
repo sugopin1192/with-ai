@@ -1,0 +1,59 @@
+{
+  "name": "with-ai",
+  "displayName": "WITH-AI",
+  "version": "1.0.0",
+  "description": "Google Meet AI assistant - real-time summarization and Q&A",
+  "private": true,
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build",
+    "package": "plasmo package"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.37.0",
+    "@google/genai": "^1.50.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.469.0",
+    "openai": "^4.78.0",
+    "plasmo": "^0.90.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/node": "^22.10.10",
+    "@types/react": "^19.0.4",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.7.3"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@swc/core",
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract",
+      "sharp"
+    ]
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://meet.google.com/*"
+    ],
+    "permissions": [
+      "storage",
+      "sidePanel",
+      "activeTab",
+      "alarms",
+      "scripting",
+      "tabs"
+    ],
+    "action": {
+      "default_title": "WITH-AI"
+    }
+  }
+}
